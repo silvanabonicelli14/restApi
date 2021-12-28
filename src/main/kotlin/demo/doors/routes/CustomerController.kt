@@ -13,19 +13,22 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class CustomerController {
-    private val customerService: CustomerService? = null
+    private var customerService = CustomerService()
     private val objectMapper = ObjectMapper()
 
     @GetMapping("/customer/{id}")
-    fun getCustomer() = "{\"id\":\"1\",\"telephone\":\"13256465\",\"favorites\":[\"music\",\"art\"]}"
+    fun getCustomer(@PathVariable id: String):  ResponseEntity<Customer?>? {
+        return ResponseEntity.ok(customerService.findById(id))
+    }
 
     @PatchMapping(path = ["/customer/{id}"], consumes = ["application/json-patch+json"])
     fun updateCustomer(@PathVariable id: String, @RequestBody patch: JsonPatch): ResponseEntity<Customer?>? {
         return try {
-            val customer = Customer(id,"13256465", listOf("music","art"))
-            val customerPatched: Customer = applyPatchToCustomer(patch, customer)
-            customerService?.updateCustomer(customerPatched)
-            ResponseEntity.ok(customerPatched)
+            customerService.findById(id)?.let {
+                val customerPatched: Customer = applyPatchToCustomer(patch, it)
+                customerService.updateCustomer(customerPatched)
+                ResponseEntity.ok(customerPatched)
+            }
         } catch (e: JsonPatchException) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         } catch (e: JsonProcessingException) {

@@ -2,15 +2,22 @@ package demo.application.service
 
 import demo.application.domain.Customer
 import org.springframework.stereotype.Service
-import java.util.*
 
 
 @Service
 class CustomerService {
 
-    private val customers: MutableList<Customer> = ArrayList()
+    private var customers: MutableList<Customer> = mutableListOf(
+        Customer("1","13256465", listOf("music","art")),
+        Customer("2","13255", listOf("art"))
+    )
 
     fun updateCustomer(customer: Customer) {
-        customers[customers.indexOf(customer)] = customer
+
+        val customerToUpdate = findById(customer.id)
+        customers[customers.indexOf(customerToUpdate)] = customer
     }
+
+    fun findById(id: String): Customer? =
+        customers.firstOrNull { it.id == id }
 }

@@ -6,13 +6,14 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.*
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+
 
 @Suppress("UNUSED_EXPRESSION")
 @SpringBootTest(
@@ -25,11 +26,12 @@ class CustomerControllerTests(@Autowired private val mockMvc: MockMvc) {
 	@Test
 	fun `GIVEN customer WHEN get is requested THEN a customer is returned`() {
 
-		val expectedCustomer = "{\"id\":\"1\",\"telephone\":\"13256465\",\"favorites\":[\"music\",\"art\"]}"
-		mockMvc.get("/customer/1")
+		val expectedCustomer = "{\"id\":\"2\",\"telephone\":\"13255\",\"favorites\":[\"art\"]}"
+		mockMvc.get("/customer/2")
 			.andExpect {
 				status { isOk() }
-				content { expectedCustomer }
+				content { contentType(MediaType.APPLICATION_JSON) }
+				content { json(expectedCustomer) }
 			}
 	}
 
@@ -51,5 +53,12 @@ class CustomerControllerTests(@Autowired private val mockMvc: MockMvc) {
 			.andExpect(MockMvcResultMatchers.status().isOk)
 			.andExpect(MockMvcResultMatchers.content().string(expectedCustomer))
 			.andDo(MockMvcResultHandlers.print())
+
+		mockMvc.get("/customer/1")
+			.andExpect {
+				status { isOk() }
+				content { contentType(MediaType.APPLICATION_JSON) }
+				content { json(expectedCustomer) }
+			}
 	}
 }
